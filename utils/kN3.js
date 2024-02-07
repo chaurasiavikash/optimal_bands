@@ -1,20 +1,9 @@
-var nu_min  ;
-var nu_max  ;
-var nu_opt  ;
-
-
-var m1;
-var n1;
-var alpha1;
-
-var numData;
-var parameters;
-var nu_i;
+ 
 var N;
 var N1;
 
 var Pi = Math.PI;
-var tau;
+ 
 var n;
 var h;
 var kappa0 = [];  // curvature of the midline at time t = 0
@@ -22,7 +11,6 @@ var kappa = [];  // curvature of the midline at time t = 0
 
 var plotClicked;
 
- N = 300;
 var avg = function (arr) {
    return arr.reduce((a, b) => a + b, 0) / arr.length;
 };
@@ -47,442 +35,135 @@ var linspace = function (start, end, num) {
 
   return result;
 }
-
-
-
-
-
-N = 300;
-var t = linspace(0, 2 * Math.PI, N + 1);
  
 
-function calculateBeta(m1, n1, alpha) {
-  const tanBeta1Squared = - (8 * m1 * Math.sin(alpha) ** 2) / (2 * (4 * n1 * Math.cos(alpha) + m1 * (3 + Math.cos(2 * alpha))));
-  
-  
-  if (tanBeta1Squared >= 0) {
-      const tanBeta1 = Math.sqrt(tanBeta1Squared);
-      const beta1_1 = Math.atan(tanBeta1);
-      const beta1_2 = Math.atan(tanBeta1) + Math.PI;
-
-      // Use beta1_1 as beta
-      return beta1_1;
-  } else {
-       
-      return Math.PI/2;
-      //return null;
-  }
-}
-
-var cen = [0, 0, 0];
-
-var data_t0 = function (m,n,alpha) {
+var animationData = function (n,N,j) {
  
-
-  h = 1/N;
- 
-  let tau = 1;
+  let t = j % (2*N);
+  let c =1;
   
-  let tx0 = [];
-  let ty0 = [];
-  let tz0 = []; 
+  let hx = [];
+  let hy = [];
+  let hz = [];
 
-  let hx2p = [];
-  let hy2p = [];
-  let hz2p = [];
+  let rx = [];
+  let ry = [];
+  let rz = [];
+ 
+  
+
 
   kappa0 = Array(N + 1).fill(0);
-  
-const beta = calculateBeta(m,n,alpha);
-
-// calculating hx0, hy0, and hz0 using bates formula 
-
-
-const sqrt2 = Math.sqrt(2);
-const sqrt3 = Math.sqrt(3);
-
-const cosBeta = Math.cos(beta);
-const sinBeta = Math.sin(beta);
-const cosAlpha = Math.cos(alpha);
-const sinAlpha = Math.sin(alpha);
-
- /////////////////////////////// Now rotation hx0, hy0,hz0 such that the 
-////   symmetry plane is x-y plane
-//th = 0;
-let ux = -1/sqrt2, uy = 1/sqrt2, uz = 0;
-let th = -0.955317;   // angles in radian between the z axis and the normal vector
-let R1u = [
-  [
-    Math.cos(th) + ux ** 2 * (1 - Math.cos(th)),
-    ux * uy * (1 - Math.cos(th)) - uz * Math.sin(th),
-    ux * uz * (1 - Math.cos(th)) + uy * Math.sin(th),
-  ],
-  [
-    ux * uy * (1 - Math.cos(th)) + uz * Math.sin(th),
-    Math.cos(th) + uy ** 2 * (1 - Math.cos(th)),
-    uy * uz * (1 - Math.cos(th)) - ux * Math.sin(th),
-  ],
-  [
-    ux * uz * (1 - Math.cos(th)) - uy * Math.sin(th),
-    uy * uz * (1 - Math.cos(th)) + ux * Math.sin(th),
-    Math.cos(th) + uz ** 2 * (1 - Math.cos(th)),
-  ],
-];
+ 
+const cosGamma =  n/2 - Math.sqrt(n*n-4)/2;
+const sinGamma =  1-Math.sqrt(cosGamma*cosGamma);
+ 
 ////////////////////////////////////////////////////////////////////////////
 
+// first calculating the rotation angle for rigid transformation such that the x coordinate of the midline at s = 0 is  0
+  s = i/N*Math.PI;
+  xi = 0*s-c*t;    // xi at s = 0
+
+  let cos2s = Math.cos(2*xi)
+  let sin2s = Math.sin(2*xi)
+  let cosns = Math.cos(n*xi)
+  let sinns = Math.sin(n*xi)
+
+  let cosn_m_s = Math.cos(2*(n-1)*xi)
+  let cosn_p_s = Math.cos(2*(n+1)*xi)
+
+  let sinn_m_s = Math.sin(2*(n-1)*xi)
+  let sinn_p_s = Math.sin(2*(n+1)*xi)
+   
+
+  let tempRx = sinGamma/2 * ((n-cosGamma)*sin2s - (1+cosGamma)*sinn_m_s/2/(n-1) + (1-cosGamma)*sinn_p_s/2/(n+1));
+  let tempRy = -sinGamma/2 * ((n-cosGamma)*cos2s + (1+cosGamma)*cosn_m_s/2/(n-1) + (1-cosGamma)*cosn_p_s/2/(n+1));
+   
+  let norm1 = Math.sqrt(tempRx*tempRx + tempRy*tempRy)
+  
+  const cosths_0 = tempRy/norm1;  // cos and sin theta of the angle required for rotation 
+  const sinths_0 = tempRx/norm1;
+    
+
+
+
 for (let i = 0; i <= N; i++) {
-    const cosMt = Math.cos(m * t[i]);
-    const sinMt = Math.sin(m * t[i]);
-    const cosNt = Math.cos(n * t[i]);
-    const sinNt = Math.sin(n * t[i]);
+   
+  s = i/N*Math.PI;
+  xi = s-c*t;
 
-    hx0[i] = (1 / 6) * (
-        sqrt2 * cosBeta * (-sqrt3 * cosMt + 3 * sinMt) * sinAlpha + 
-        sqrt2 * (3 * cosMt + sqrt3 * sinMt) * sinNt * sinBeta - 
-        2 * sqrt3 * cosNt * sinAlpha * sinBeta + 
-        cosAlpha * (2 * sqrt3 * cosBeta + 
-        sqrt2 * cosNt * (-sqrt3 * cosMt + 3 * sinMt) * sinBeta)
-    );
+  const cos2s = Math.cos(2*xi)
+  const sin2s = Math.sin(2*xi)
+  const cosns = Math.cos(n*xi)
+  const sinns = Math.sin(n*xi)
 
-    hy0[i] = (1 / 6) * (
-        -sqrt2 * cosBeta * (sqrt3 * cosMt + 3 * sinMt) * sinAlpha + 
-        sqrt2 * (-3 * cosMt + sqrt3 * sinMt) * sinNt * sinBeta - 
-        2 * sqrt3 * cosNt * sinAlpha * sinBeta + 
-        cosAlpha * (2 * sqrt3 * cosBeta - 
-        sqrt2 * cosNt * (sqrt3 * cosMt + 3 * sinMt) * sinBeta)
-    );
+  const cosn_m_s = Math.cos(2*(n-1)*xi)
+  const cosn_p_s = Math.cos(2*(n+1)*xi)
 
-    hz0[i] = (
-        cosBeta * (cosAlpha + sqrt2 * cosMt * sinAlpha) + 
-        (-sqrt2 * sinMt * sinNt + cosNt * (sqrt2 * cosMt * cosAlpha - sinAlpha)) * sinBeta
-    ) / sqrt3;
-
-    let temp = [];
-   temp[0] = R1u[0][0]*hx0[i] + R1u[0][1]*hy0[i] + R1u[0][2]*hz0[i];
-   temp[1] = R1u[1][0]*hx0[i] + R1u[1][1]*hy0[i] + R1u[1][2]*hz0[i];
-   temp[2] = R1u[2][0]*hx0[i] + R1u[2][1]*hy0[i] + R1u[2][2]*hz0[i];
+  const sinn_m_s = Math.sin(2*(n-1)*xi)
+  const sinn_p_s = Math.sin(2*(n+1)*xi)
    
   
-  hx0[i] = temp[0];
-  hy0[i] = temp[1];
-  hz0[i] = temp[2];
+ 
+    let tempBx =  cos2s*cosns*cosGamma + sin2s*sinns; 
+    let tempBy =  sin2s*cosns*cosGamma - cos2s*sinns;  
+    hz[i] =  cosns*sinGamma;
+
+    let tempRx = sinGamma/2 * ((n-cosGamma)*sin2s - (1+cosGamma)*sinn_m_s/2/(n-1) + (1-cosGamma)*sinn_p_s/2/(n+1));
+    let tempRy = -sinGamma/2 * ((n-cosGamma)*cos2s + (1+cosGamma)*cosn_m_s/2/(n-1) + (1-cosGamma)*cosn_p_s/2/(n+1));
+    rz[i] = -Math.sin(2*n*xi)*cosGamma*sinGamma/n;
+
+    rx[i] = cosths_0 * tempRx - sinths_0 * tempRy;
+    ry[i] = sinths_0 * tempRx + cosths_0 * tempRy;
+
+    hx[i] = cosths_0 * tempBx - sinths_0 * tempBy;
+    hy[i] = sinths_0 * tempBx + cosths_0 * tempBy;
+
+
+ 
+
 
 }
-
-    
-
- ////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////
- ////////////////////////////////////////////////////////////////
-
  
-  for (var i = 1; i < N + 1; i++) {
-   
-
-    tx0[i] = (hy0[i - 1] * hz0[i] - hy0[i] * hz0[i - 1])/tau/h;
-    ty0[i] = (hz0[i - 1] * hx0[i] - hz0[i] * hx0[i - 1])/tau/h;
-    tz0[i] = (hx0[i - 1] * hy0[i] - hx0[i] * hy0[i - 1])/tau/h;
-
-    
-
-  }
-  // if (isNaN(hx0  ) || isNaN(hy0  ) || isNaN(hz0   )) {
-  //   console.log(`Found NaN at index ${i}`);
-  // }
-
-  tx0[0] = tx0[N];
-  ty0[0] = ty0[N];
-  tz0[0] = tz0[N];
-
-  //let kmax = Math.max(...kappa0.map(Math.abs));;
- 
-// calculating curvature 
-// curvature
-hx2p[0] = (hx0[1] - hx0[N - 1] - 2 * hx0[0]) / h ** 2;
-hy2p[0] = (hy0[1] - hy0[N - 1] - 2 * hy0[0]) / h ** 2;
-hz2p[0] = (hz0[1] - hz0[N - 1] - 2 * hz0[0]) / h ** 2;
-
-hx2p[N] = -hx2p[0];
-hy2p[N] = -hy2p[0];;
-hz2p[N] = -hz2p[0];;
-
-
- kappa0[0] = tx0[0] * hx2p[0] + ty0[0] * hy2p[0] + tz0[0] * hz2p[0];
-
-for (var i = 1; i < N; i++) {
-  hx2p[i] = (hx0[i + 1] + hx0[i - 1] - 2 * hx0[i]) / h ** 2;
-  hy2p[i] = (hy0[i + 1] + hy0[i - 1] - 2 * hy0[i]) / h ** 2;
-  hz2p[i] = (hz0[i + 1] + hz0[i - 1] - 2 * hz0[i]) / h ** 2;
-
-  kappa0[i] = tx0[i] * hx2p[i] + ty0[i] * hy2p[i] + tz0[i] * hz2p[i];
-}
-
- kappa0[N] = tx0[N] * hx2p[N] + ty0[N] * hy2p[N] + tz0[N] * hz2p[N];
-
-//  // normalizing curvature
- 
-  let kmax = Math.max(...kappa0.map(Math.abs)); 
-  kappa0 = kappa0.map((num) => num / kmax);
- 
- 
-///////////////////////
-
-
- 
-  // Midline
-  rx0[0] = 0.0;
-  ry0[0] = 0.0;
-  rz0[0] = 0.0;
-  h = 1;
-  for (var i = 0; i < N; i++) {
-    rx0[i + 1] = rx0[i] + h * tx0[i + 1];
-    ry0[i + 1] = ry0[i] + h * ty0[i + 1];
-    rz0[i + 1] = rz0[i] + h * tz0[i + 1];
-  }
-
-  cen[0] = avg(rx0);
-  cen[1] = avg(ry0);
-  cen[2] = avg(rz0);
-
-  for (var i = 0; i < N + 1; i++) {
-    rx0[i] = rx0[i] - cen[0];
-    ry0[i] = ry0[i] - cen[1];
-    rz0[i] = rz0[i] - cen[2];
-  }
   // nomrlalizing the midline
   let dl = 0;
   for (let i = 0; i < N; i++) {
-    let dx = rx0[i + 1] - rx0[i];
-    let dy = ry0[i + 1] - ry0[i];
-    let dz = rz0[i + 1] - rz0[i];
+    let dx = rx[i + 1] - rx[i];
+    let dy = ry[i + 1] - ry[i];
+    let dz = rz[i + 1] - rz[i];
     dl += Math.sqrt(dx * dx + dy * dy + dz * dz);
   }
   dl = dl / 6;
   for (let i = 0; i <= N; i++) {
-    rx0[i] /= dl;
-    ry0[i] /= dl;
-    rz0[i] /= dl;
+    rx[i] /= dl;
+    ry[i] /= dl;
+    rz[i] /= dl;
   }
 
-   
+  return [hx,hy,hz,rx,ry,rz]; 
 };
 
 //  midline and binormal loaded from the saved file 
-
-//the function below generates animation data 
-var animationData = function(j) {
-  let ind = j % (2*N); // ensuring that index is not out of bound
-  let ind2 = j % (N); // ensuring that index is not out of bound
-   if (ind == 0) {
-     ind = 1;
-  }
-   let orientation =  1;
-
-  if(ind<N+1){
  
-  let ar1 = Array.from(hx0.slice(ind - 1, N));
-  let ar2 = Array.from(hx0.slice(0, ind).map((x) => orientation * x));
-  
-  var hx = ar1.concat(ar2);
-
-  ar1 = Array.from(hy0.slice(ind - 1, N ));
-  ar2 = Array.from(hy0.slice(0, ind).map((x) => orientation * x));
-  var hy = ar1.concat(ar2);
-
-  ar1 = Array.from(hz0.slice(ind - 1, N));
-  ar2 = Array.from(hz0.slice(0, ind).map((x) => orientation * x));
-  var hz = ar1.concat(ar2);
-
-  ar1 = Array.from(kappa0.slice(ind - 1, N ));
-  ar2 = Array.from(kappa0.slice(0, ind).map((x) => orientation * x));
-  var kappa = ar1.concat(ar2);
-
-  // updated binormal 
-   ar1 = Array.from(rx0.slice(ind - 1, N));
-   ar2 = Array.from(rx0.slice(0, ind).map((x) => 1 * x));
-  
-   var rx = ar1.concat(ar2);
-
-
-
-   ar1 = Array.from(ry0.slice(ind - 1, N));
-   ar2 = Array.from(ry0.slice(0, ind).map((x) => 1 * x));
-  
-   var ry = ar1.concat(ar2);
-
-   ar1 = Array.from(rz0.slice(ind - 1, N));
-   ar2 = Array.from(rz0.slice(0, ind).map((x) => 1 * x));
-  
-   var rz = ar1.concat(ar2);
-   
-    
-  }
-  else {
-  let ar1 = Array.from(hx0.slice(ind2-1, N).map((x) => orientation * x));
-  let ar2 = Array.from(hx0.slice(0, ind2));
-
-  var hx = ar1.concat(ar2);
-
-   ar1 = Array.from(hy0.slice(ind2-1, N).map((x) => orientation * x));
-   ar2 = Array.from(hy0.slice(0, ind2));
-
-  var hy = ar1.concat(ar2);
-
-   ar1 = Array.from(hz0.slice(ind2-1, N).map((x) => orientation * x));
-   ar2 = Array.from(hz0.slice(0, ind2));
-
-  var hz = ar1.concat(ar2);
-
-  ar1 = Array.from(kappa0.slice(ind2-1, N).map((x) => orientation * x));
-   ar2 = Array.from(kappa0.slice(0, ind2));
-
-  var kappa = ar1.concat(ar2);
-
-  // updated binormal 
-   ar1 = Array.from(rx0.slice(ind2-1, N) );
-   ar2 = Array.from(rx0.slice(0, ind2));
-
-  var rx = ar1.concat(ar2);
-
-   ar1 = Array.from(ry0.slice(ind2-1, N) );
-   ar2 = Array.from(ry0.slice(0, ind2));
-
-  var ry = ar1.concat(ar2);
-
-   ar1 = Array.from(rz0.slice(ind2-1, N) );
-   ar2 = Array.from(rz0.slice(0, ind2));
-
-  var rz = ar1.concat(ar2);
- 
-  };
-
-
-   // ensuring that centroid is at the origin 
-   cen[0] = avg(rx);
-  cen[1] = avg(ry);
-  cen[2] = avg(rz);
-
-
-  for (var i = 0; i < N + 1; i++) {
-    rx[i] = rx[i] - cen[0];
-    ry[i] = ry[i] - cen[1];
-    rz[i] = rz[i] - cen[2];
-  }
-   /// rotating appropriately 
-   
-   // first rotating the hand such that index 0 is fixed
-   
-  let th =  -Math.acos(rx[0] / Math.sqrt(rx[0]*rx[0] + ry[0]*ry[0]));
-   // angle hetween point at s==0 and x axis
-   if (ry[0] < 0) {
-    th = 2 * Math.PI - th;
-  }
-  
-  if (ry[0] == 0 && rx[0] > 0) {
-    th = 0;
-  } else if (ry[0] == 0 && rx[0] < 0) {
-    th = Math.PI;
-  }
-  //th = 0;
-  let ux = 0, uy = 0, uz = 1;
-  
-  
-  let R1u = [
-    [
-      Math.cos(th) + ux ** 2 * (1 - Math.cos(th)),
-      ux * uy * (1 - Math.cos(th)) - uz * Math.sin(th),
-      ux * uz * (1 - Math.cos(th)) + uy * Math.sin(th),
-    ],
-    [
-      ux * uy * (1 - Math.cos(th)) + uz * Math.sin(th),
-      Math.cos(th) + uy ** 2 * (1 - Math.cos(th)),
-      uy * uz * (1 - Math.cos(th)) - ux * Math.sin(th),
-    ],
-    [
-      ux * uz * (1 - Math.cos(th)) - uy * Math.sin(th),
-      uy * uz * (1 - Math.cos(th)) + ux * Math.sin(th),
-      Math.cos(th) + uz ** 2 * (1 - Math.cos(th)),
-    ],
-  ];
-    for (let i = 0; i <  N+1; i++) {
-     
-     let temp = [];
-     temp[0] = R1u[0][0]*hx[i] + R1u[0][1]*hy[i] + R1u[0][2]*hz[i];
-     temp[1] = R1u[1][0]*hx[i] + R1u[1][1]*hy[i] + R1u[1][2]*hz[i];
-     temp[2] = R1u[2][0]*hx[i] + R1u[2][1]*hy[i] + R1u[2][2]*hz[i];
-     
-    
-    hx[i] = temp[0];
-    hy[i] = temp[1];
-    hz[i] = temp[2];
-
-
- 
-     temp[0] = R1u[0][0]*rx[i] + R1u[0][1]*ry[i] + R1u[0][2]*rz[i];
-     temp[1] = R1u[1][0]*rx[i] + R1u[1][1]*ry[i] + R1u[1][2]*rz[i];
-     temp[2] = R1u[2][0]*rx[i] + R1u[2][1]*ry[i] + R1u[2][2]*rz[i];
-
-    rx[i] = temp[0];
-    ry[i] = temp[1];
-    rz[i] = temp[2];
-    
-
-
-  };
-  
-
-
- 
-  //console.log(rx ); // returns true if any element is NaN
-  //console.log(rx.some(Number.isNaN)); // returns true if any element is NaN
-  
-   
-
-  // cen[0] = avg(rx);
-  // cen[1] = avg(ry);
-  // cen[2] = avg(rz);
-  
-  // console.log(rx[240])
-  //   console.log(rx.some(Number.isNaN));
-  // for (var i = 0; i < N + 1; i++) {
-  //   rx[i] = rx[i] - cen[0];
-  //   ry[i] = ry[i] - cen[1];
-  //   rz[i] = rz[i] - cen[2];
-  // }
-
-  
- 
-   
-   
-  return [hx,hy,hz,rx,ry,rz,kappa];
-  // rotating appropriately
-}
-// matrix multiplication
 
  
  
-var hx = [];
-var hy = [];
-var hz = [];
-
-var rx = [];
-var ry = [];
-var rz = [];
 var kappa = [];
-var fourierExpansion = function (n, t, hl) {
+
+var fourierExpansion = function (n,N, t, hl) {
 
    l = (hl * 1.7) / 2;
    var v = [];
   
 
-  const result = animationData(t);
-   hx = result[0];
-   hy = result[1];
-   hz = result[2];
+  const result = animationData(n,N,t);
+   let hx = result[0];
+   let hy = result[1];
+   let hz = result[2];
   
-   rx = result[3];
-   ry = result[4];
-   rz = result[5];
+   let rx = result[3];
+   let ry = result[4];
+   let rz = result[5];
 
    for(var i=0; i<N+1;i++) {
     //rz[i]=rz[i]-.35;
@@ -491,9 +172,7 @@ var fourierExpansion = function (n, t, hl) {
 
    kappa = result[6];
   
-   cen[0] = avg(rx);
-   cen[1] = avg(ry);
-   cen[2] = avg(rz);
+   let cen  =  [0,0,0];
  
   var mid = [0, 0, 0];
 
@@ -523,14 +202,8 @@ var fourierExpansion = function (n, t, hl) {
       }
     };
   };
-  // tests
-  // console.log(Math.abs(hx[n]*hx[1]+hy[n]*hy[1]+hz[n]*hz[1]+0.925450349781138));
-  // tmp = [ hy[n]*hz[1] - hy[1]*hz[n],
-  //         hz[n]*hx[1] - hz[1]*hx[n],
-  //         hx[n]*hy[1] - hx[1]*hy[n] ];
-  // for (var j = 0; j < 3; j++) mid[j] -= tmp[j];
-  // console.log([mid[0],mid[1],mid[2]])
-  return [v,kappa];
+ 
+  return [v, rx];
 };
 
 var paths = function (n, hl, selector,ind) {
@@ -539,7 +212,7 @@ var paths = function (n, hl, selector,ind) {
   var v0  = [];
   var v   = [];
   for (var t = 0; t <300; t++) {
-     v0 = fourierExpansion(n, t, hl)[0];
+     v0 = fourierExpansion(n,N, t, hl)[0];
     v[1] = v0[6 * ind - 5]; 
     v[2] = v0[6 * ind - 4]; 
     v[3] = v0[6 * ind - 3]; 
@@ -562,7 +235,7 @@ var paths = function (n, hl, selector,ind) {
         new BABYLON.Vector3(
           (v[1] + v[4]) / 2,
           (v[3] + v[6]) / 2,
-          -(v[2] + v[5]) / 2
+           -(v[2] + v[5]) / 2
         )
       );
       // if (i > e / 2 - 1) {
@@ -594,7 +267,7 @@ function poly(N,n, v, i, cm, golfMesh , scheme) {
    var colors = [];
    if (scheme == 1) {
     // rainbow whole tetrahedron
-    c1 =  jet(i); 
+    c1 =  jet(i,N);; 
      
     
   }   else if (scheme == 2) {
@@ -896,7 +569,7 @@ function getVibgyorColor(index, numPoints) {
 }
 
 
-var jet = function(i) {
+var jet = function(i,N) {
     
   let r, g, b;
 

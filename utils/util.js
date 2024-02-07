@@ -211,7 +211,7 @@ function Slider2 ( id, min, max, init, prefix, digits, suffix ) {
     if(id=='nuSlider'){
     val = Math.round(val); // Round val to the nearest integer
     };
-    let temp = ((max-min)/100+min)/Math.PI;
+    let temp = ((max-min)/100+min) ;
     
     slider.getElementsByTagName('rect')[0].setAttribute('x',x-19);
     //slider.getElementsByTagName('text')[0].innerHTML = "\u03B1 = " + temp.toFixed(4).toString() + "&pi;"

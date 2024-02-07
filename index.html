@@ -57,24 +57,7 @@
     <text  > parameters </text>
     </g>
  
-    <svg width='200' height='110' viewBox='-100 -55 200 110' style='margin-top:1px'>
-      <g class='touchElement glow-effect' id='buttNumOf_m_Minus'>
-        <title>decrease m</title>
-        <circle cx='-62' cy='10' r='32' /> <!-- Modified cy here -->
-        <polygon points='-80 7 -80 13 -44 13 -44 7' fill='#fff' /> <!-- Adjusted y values in points -->
-      </g>
-      <g class='touchElement glow-effect' id='buttNumOf_m_Plus'>
-        <title>increase m</title>
-        <circle cx='62' cy='10' r='32' /> <!-- Modified cy here -->
-        <polygon points='80 7 80 13 65 13 65 28 59 28 59 13 44 13 44 7 59 7 59 -8 65 -8 65 7' fill='#fff' />
-        <!-- Adjusted y values in points -->
-      </g>
     
-      <g class="textElement" >
-        
-        <text id='infoNumOf_m' y='16'> m=1</text>
-      </g>
-    </svg>
     <svg width='200' height='110' viewBox='-100 -55 200 110' style='margin-top:1px'>
       <g class='touchElement glow-effect' id='buttNumOf_n_Minus'>
         <title>decrease n</title>
@@ -93,9 +76,9 @@
     </svg>
      <br>
      <br>
-     <svg id='alphaSlider' class='slider glow-effect' width='200' height='124' viewBox='-100 -45 200 70'>
+     <svg id='NSlider' class='slider glow-effect' width='200' height='124' viewBox='-100 -45 200 70'>
       <title> slide to alpha value </title>
-      <text x='-50' y='-10' >alpha</text> <!-- Position the text on top -->
+      <text x='-50' y='-10' >N</text> <!-- Position the text on top -->
       <polygon fill='#555' points='-100 0 -100 40 100 40 100 0' /> <!-- Reposition the polygon -->
       <rect width='38' height='38' x='-19' y='1' /> <!-- Reposition the rectangle -->
     </svg>
@@ -288,53 +271,36 @@ setTimeout(() => {
 
 
     window.addEventListener('DOMContentLoaded', function () {
-
  
-      //const alphaForm = ebID('alpha_form');
+ 
+      var n = 3;
+      var N = 60;
+      var n_min = 3;
+      var n_max = 27;
+       
+      // Ensure n is defined somewhere in your code. For example:
+      var Nmin = 10; // Just an example, set it to your desired minimum
+      var Nmax = 300;  
+      var NStepSize = 1;
 
-
-
-      // alphaSlider.oninput = function () {
-      //   ebID('alpha_value').innerHTML = "\u03B1 = " + parseFloat(this.value).toFixed(4).toString() + "&pi;";
-      // }
-
-
-      // ebID('alpha_value').innerHTML = "\u03B1 = " + parseFloat(0.2314598521523062).toFixed(4).toString() + "&pi;";
-
-
-
-
-      // alphaSlider.value = 1 / 4;
-      //alphaForm.value = 1 / 4;
-
-      // initialization 
-
-
-      var m1 = 1;
-      var n1 = -3;
-      var alpha1;
-      var n1_min = -m1 - 6;
-      var n1_max = -m1 - 1;
-      
       // quantitites for alpha slider 
-      var alphaSlider;
-      var alphaSlider_min = 0;
-      var alphaSlider_max = Math.PI / 2;
-      var alphaStepSize = (alphaSlider_max - alphaSlider_min) / 100;
+      var NSlider;
+   
+  
 
 
-
-      ebID('infoNumOf_m').innerHTML = "m = " + m1.toString();
-      ebID('infoNumOf_n').innerHTML = "n = " + n1.toString();
+       ebID('infoNumOf_n').innerHTML = "n = " + n.toString();
       // ebID('alpha_value').innerHTML = "\u03B1 = " + parseFloat(this.value).toFixed(4).toString() + "&pi;";
       // number of twists 
-      n = Math.abs(n1);
+      n = Math.abs(n);
 
-      updateAlphaRange(n1 / m1);
-      
+       
 
       /// initialize the mesh
-      data_t0(m1, n1, alpha1);
+      var n = 3;
+       var c = 1;
+      var t = 0;
+      animationData(n,N,0);
 
       ///////////////////////////////////////////////////
 
@@ -344,86 +310,25 @@ setTimeout(() => {
         target.value = source.value;
       }
 
-      function updateAlphaRange(value) {
-        // Update the range of n_slider and n_form based on the value
-        // This example sets the min and max to be -value and value respectively
-        // implementing  the closure condition abs(n)>abs(m)/2
-        let temp = Math.acos(-value - Math.sqrt(value * value - 1));  
-        alphaSlider_min = temp * .02;
-        alphaSlider_max = temp;
-
-
-        //alphaForm.value = (rangeMin + rangeMax) / 2;
- 
-        alphaStepSize = (alphaSlider_max - alphaSlider_min) / 100; // Calculating the  
-        alphaSlider = new Slider2('alphaSlider', 0, 100 , 50, 'alpha ', 2, '%');
-        alpha1 =  alphaSlider.getValue()*alphaStepSize + alphaSlider_min ;
-        //ebID('alphaSlider').getElementsByTagName('rect')[0].setAttribute('x',x);
-        ebID('alphaSlider').getElementsByTagName('text')[0].innerHTML = "\u03B1 = " + (alpha1/Math.PI).toFixed(4).toString() + "&pi;"
-        
-      }
- 
- 
-
-      // change number of half twists ////////////////////////////////////////////////////
-      ebID('buttNumOf_m_Minus').addEventListener('click', function () {
-        if (m1 > 1) {
-          m1 = m1 - 1;
-          ebID('infoNumOf_m').innerHTML = "m = " + m1.toString();
-
-          // change the position of the energy slider 
-          n1_min = -m1 - 6;
-          n1_max = -m1 - 1;
-          n1 = Math.round((n1_min + n1_max) / 2);
-          updateAlphaRange(n1 / m1);
-          ebID('infoNumOf_n').innerHTML = "n = " + n1.toString();
-
- 
-
-          document.body.dispatchEvent(nChanged);
-
-        }
-      });
-      ebID('buttNumOf_m_Plus').addEventListener('click', function () {
-        if (m1 < 10) {
-          m1 = m1 + 1;
-          // change the position of the energy slider 
-          ebID('infoNumOf_m').innerHTML = "m = " + m1.toString();
-
-          n1_min = -m1 - 6;
-          n1_max = -m1 - 1;
-          n1 = Math.round((n1_min + n1_max) / 2);
-
-          
-          ebID('infoNumOf_n').innerHTML = "n = " + n1.toString();
-          updateAlphaRange(n1 / m1);
-
-          
-
-          document.body.dispatchEvent(nChanged);
-        }
-      });
+      
 
       /// n buttons
       // change number of half twists ////////////////////////////////////////////////////
       ebID('buttNumOf_n_Minus').addEventListener('click', function () {
-        if (n1 > n1_min) {
-          n1 = n1 - 1;
-          ebID('infoNumOf_n').innerHTML = "n = " + n1.toString();
-          // change the position of the energy slider 
-          updateAlphaRange(n1 / m1);
-
-        
+        if (n > n_min) {
+          n = n - 1;
+          ebID('infoNumOf_n').innerHTML = "n = " + n.toString();
+          
 
           document.body.dispatchEvent(nChanged);
         }
       });
       ebID('buttNumOf_n_Plus').addEventListener('click', function () {
-        if (n1 < n1_max) {
-          n1 = n1 + 1;
+        if (n < n_max) {
+          n = n + 1;
           // change the position of the energy slider 
-          ebID('infoNumOf_n').innerHTML = "n = " + n1.toString();
-          updateAlphaRange(n1 / m1);
+          ebID('infoNumOf_n').innerHTML = "n = " + n.toString();
+          
           // update alpha slider 
           
 
@@ -431,15 +336,16 @@ setTimeout(() => {
         }
       });
 
-       
+      NSlider = new Slider2('NSlider', Nmin, Nmax , 50, 'N ', 2, '');
+        N =  NSlider.getValue()*NStepSize + Nmin ;
+        //ebID('NSlider').getElementsByTagName('rect')[0].setAttribute('x',x);
+        ebID('NSlider').getElementsByTagName('text')[0].innerHTML = "N = " +  N.toString()  
+          
 
-      ebID('alphaSlider').addEventListener('sliderChange', function () {
-        alpha1 = alpha1 =  alphaSlider.getValue()*alphaStepSize + alphaSlider_min ;
-        ebID('alphaSlider').getElementsByTagName('text')[0].innerHTML = "\u03B1 = " + (alpha1/Math.PI).toFixed(4).toString() + "&pi;"
-        
-
-        
-        document.body.dispatchEvent(nChanged);
+      ebID('NSlider').addEventListener('sliderChange', function () {
+        N =    NSlider.getValue()*NStepSize + Nmin ;
+        ebID('NSlider').getElementsByTagName('text')[0].innerHTML = "N= " +  N .toString()   ;
+         document.body.dispatchEvent(nChanged);
       });
 
       ///////////////////////////////////////////////////
@@ -622,9 +528,9 @@ setTimeout(() => {
 
 
 
-        function updateBandMesh(k, hingeLength) {
+        function updateBandMesh(n,N,k, hingeLength) {
           t = k_to_t(k);
-          let temp = fourierExpansion(N, t, hingeLength);
+          let temp = fourierExpansion(n,N, t, hingeLength);
           var v = temp[0];
 
           // updating curvature 
@@ -639,10 +545,7 @@ setTimeout(() => {
             createchartK(kappa);
           }
 
-
-
-
-
+ 
           // N = 105;
           var pos = [];
           var pathMidline = [];
@@ -665,7 +568,7 @@ setTimeout(() => {
             pos.push(v2[0], v2[1], v2[2]);
 
             if (colorScheme == 1) {
-              var c1 = jet(i - 1);
+              var c1 = jet(i-1,N);;
 
               colors.push(c1[0], c1[1], c1[2], c1[3]);
               colors.push(c1[0], c1[1], c1[2], c1[3]);
@@ -703,7 +606,7 @@ setTimeout(() => {
           pos.push(v2[0], v2[1], v2[2]);
 
           if (colorScheme == 1) {
-            var c1 = jet(i - 1);
+            var c1 = jet(i-1,N);;
 
             colors.push(c1[0], c1[1], c1[2], c1[3]);
             colors.push(c1[0], c1[1], c1[2], c1[3]);
@@ -863,7 +766,7 @@ setTimeout(() => {
             golf[i] = BABYLON.MeshBuilder.CreateIcoSphere(
               'ico', { radius: 0.025, subdivisions: 8, flat: false, updatable: false }, scene);
             golf[i].material = red;
-            updateBandMesh(k, hl);
+            updateBandMesh(n,N,k, hl);
 
           }
           // if (type == 2) { // midpoints get golf
@@ -925,9 +828,9 @@ setTimeout(() => {
 
 
         document.body.addEventListener('nChanged', function (e) {
-          data_t0(m1, n1, alpha1);
+          
           // number of twists 
-          n = Math.abs(n1);
+          n = Math.abs(n);
 
           midline.dispose();
           meshDispose(rulings);
@@ -940,36 +843,14 @@ setTimeout(() => {
             createTube(tubeMid, 2, 0.5 * 3, yellow);
           }
 
-          updateBandMesh(k, hl);
+          updateBandMesh(n,N,k, hl);
 
 
           refresh = true;
         }, false);
 
 
-        document.body.addEventListener('plotClicked', function (e) {
-
-          n = e.detail.n;
-          nu_i = e.detail.nu_i;
-
-
-          ebID('infoNumOfTet').innerHTML = n;
-
-
-          data_t0(nu_i);
-          midline.dispose();
-          meshDispose(rulings);
-          midlineInit();
-
-          if (showMid) {
-            meshDispose(tubeMid);
-            meshDispose(golf);
-            createTube(tubeMid, 2, 0.5 * 3, yellow);
-          }
-
-          updateBandMesh(k, hl);
-          refresh = true;
-        }, false);
+         
 
         // toggle tetrahedra //////////////////////////////////////////////////////////////
 
@@ -1012,7 +893,7 @@ setTimeout(() => {
             dot.setAttribute('cx', 40 * Math.sin(angle));
             dot.setAttribute('cy', -40 * Math.cos(angle));
             k = angle;
-            updateBandMesh(k, hl);
+            updateBandMesh(n,N,k, hl);
             refresh = true;
           }
         }
@@ -1026,7 +907,7 @@ setTimeout(() => {
             dot.setAttribute('cx', 40 * Math.sin(angle));
             dot.setAttribute('cy', -40 * Math.cos(angle));
             k = angle;
-            updateBandMesh(k, hl);
+            updateBandMesh(n,N,k, hl);
             refresh = true;
           }
         }
@@ -1057,7 +938,7 @@ setTimeout(() => {
         var hingeLengthSlider = new Slider('hingeLengthSlider', 0, 50, hl * 100, '', 0, '%');
         ebID('hingeLengthSlider').addEventListener('sliderChange', function () {
           hl = hingeLengthSlider.getValue() / 100;
-          if (!play) updateBandMesh(k, hl);
+          if (!play) updateBandMesh(n,N,k, hl);
 
           refresh = true;
 
@@ -1189,7 +1070,7 @@ setTimeout(() => {
         document.body.addEventListener('colorChanged', function (e) {
           buttonSwitchColor(ebID('buttColor' + previousColorScheme), false);
           buttonSwitchColor(ebID('buttColor' + colorScheme), true);
-          if (!play) updateBandMesh(k, hl);
+          if (!play) updateBandMesh(n,N,k, hl);
           refresh = true;
         }, false);
 
@@ -1220,7 +1101,7 @@ setTimeout(() => {
         //#############################################################
         scene.registerBeforeRender(function () {
           if (play || k == 0) {
-            updateBandMesh(k, hl);
+            updateBandMesh(n,N,k, hl);
             // move clock hand
             var dot = ebID('clockHand');
             dot.setAttribute('cx', 40 * Math.sin(k));
