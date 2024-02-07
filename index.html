@@ -279,7 +279,7 @@ setTimeout(() => {
       var n_max = 27;
        
       // Ensure n is defined somewhere in your code. For example:
-      var Nmin = 10; // Just an example, set it to your desired minimum
+      var Nmin = 2; // Just an example, set it to your desired minimum
       var Nmax = 300;  
       var NStepSize = 1;
 
@@ -337,13 +337,13 @@ setTimeout(() => {
       });
 
       NSlider = new Slider2('NSlider', Nmin, Nmax , 50, 'N ', 2, '');
-        N =  NSlider.getValue()*NStepSize + Nmin ;
+        N =  Math.round(NSlider.getValue()*NStepSize + Nmin) ;
         //ebID('NSlider').getElementsByTagName('rect')[0].setAttribute('x',x);
         ebID('NSlider').getElementsByTagName('text')[0].innerHTML = "N = " +  N.toString()  
           
 
       ebID('NSlider').addEventListener('sliderChange', function () {
-        N =    NSlider.getValue()*NStepSize + Nmin ;
+        N =    Math.round(NSlider.getValue()*NStepSize + Nmin) ;
         ebID('NSlider').getElementsByTagName('text')[0].innerHTML = "N= " +  N .toString()   ;
          document.body.dispatchEvent(nChanged);
       });

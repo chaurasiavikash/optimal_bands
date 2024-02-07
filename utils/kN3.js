@@ -39,8 +39,8 @@ var linspace = function (start, end, num) {
 
 var animationData = function (n,N,j) {
  
-  let t = j % (2*N);
-  let c =1;
+  let t = j ;
+  let c =10/N;
   
   let hx = [];
   let hy = [];
