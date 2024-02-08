@@ -477,8 +477,28 @@ setTimeout(() => {
           midline.material = midlineMaterial;
 
           // initialize rulings 
+          
+
+          if(N<22){
+            for (var i = 1; i < N + 1; i++) {
+            let temp = [];
+            temp.push(new BABYLON.Vector3(0, 0, 0));
+            temp.push(new BABYLON.Vector3(0, 0, 0));
+
+            optionsRulings = {
+              path: temp, //vec3 array,
+              radius: 0.01, // set the radius of the tube
+              updatable: true
+            };
+
+            rulings[i] = BABYLON.MeshBuilder.CreateTube("rulings", optionsRulings, scene);
+            rulings[i].material = rulingsMaterial;
 
 
+          };
+
+          }
+          else{
           for (var i = 1; i < n + 1; i++) {
             let temp = [];
             temp.push(new BABYLON.Vector3(0, 0, 0));
@@ -495,6 +515,7 @@ setTimeout(() => {
 
 
           };
+        }
 
         };
         midlineInit();
@@ -769,6 +790,27 @@ setTimeout(() => {
 
 
           // creating rulings 
+
+          if(N<22){
+
+            for (var i = 1; i < N + 1; i++) {
+            // l =  i * ind1   ;
+            l = i;
+            var v1 = [v[6 * l - 5], v[6 * l - 3], -v[6 * l - 4]];
+            var v2 = [v[6 * l - 2], v[6 * l], -v[6 * l - 1]];
+            let path = [];
+            path.push(new BABYLON.Vector3(v1[0], v1[1], v1[2]));
+            path.push(new BABYLON.Vector3(v2[0], v2[1], v2[2]));
+
+            optionsRulings.path = path;
+            optionsRulings.instance = rulings[i];
+            rulings[i] = BABYLON.MeshBuilder.CreateTube("rulings", optionsRulings); //No scene parameter when using instance
+
+
+          };
+
+          }
+          else{
           for (var i = 1; i < n + 1; i++) {
             // l =  i * ind1   ;
             l = 2 * i * ind1 - 2 * ind1 + 1;
@@ -783,7 +825,7 @@ setTimeout(() => {
             rulings[i] = BABYLON.MeshBuilder.CreateTube("rulings", optionsRulings); //No scene parameter when using instance
 
 
-          };
+          };}
 
           // meshDispose(golf) 
 
@@ -795,6 +837,26 @@ setTimeout(() => {
         // tube paths /////////////////////////////////////////////////////////////////////
 
         function createTube(tube, type, hingeLength, color) {
+
+          if(N<22){
+                     
+           
+          for (var i = 1; i < N+1; i++) {
+            var ind =i;
+
+            var curve = paths(n,N, hingeLength, type, ind);
+            tube[i] = BABYLON.Mesh.CreateTube('tube', curve, 0.0025, 8, null, null, scene);
+            tube[i].material = color;
+            golf[i] = BABYLON.MeshBuilder.CreateIcoSphere(
+              'ico', { radius: 0.025, subdivisions: 8, flat: false, updatable: false }, scene);
+            golf[i].material = red;
+            updateBandMesh(n,N,k, hl);
+          }
+        }
+          
+          else{
+
+          
           var ind0 = Math.round(N / (2 * n));
           for (var i = 1; i < n + 1; i++) {
             var ind = 2 * i * ind0 - 2 * ind0 + 1;
@@ -806,6 +868,9 @@ setTimeout(() => {
               'ico', { radius: 0.025, subdivisions: 8, flat: false, updatable: false }, scene);
             golf[i].material = red;
             updateBandMesh(n,N,k, hl);
+
+          }
+
 
           }
           // if (type == 2) { // midpoints get golf
