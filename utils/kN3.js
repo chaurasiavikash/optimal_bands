@@ -165,10 +165,7 @@ var fourierExpansion = function (n,N, t, hl) {
    let ry = result[4];
    let rz = result[5];
 
-   for(var i=0; i<N+1;i++) {
-    //rz[i]=rz[i]-.35;
-    //rz[i]=rz[i]-.35;
-   };
+   
 
    kappa = result[6];
   
@@ -181,8 +178,7 @@ var fourierExpansion = function (n,N, t, hl) {
   
 
   for (var i = 1; i < N +1; i++) {
-    
-
+ 
     mid[0] = rx[i];
     mid[1] = ry[i];
     mid[2] = rz[i];
@@ -221,8 +217,7 @@ var paths = function (n,N, hl, selector,ind) {
     v[4] = v0[6 * ind - 2]; 
     v[5] = v0[6 * ind - 1]; 
     v[6] = v0[6 * ind  ];  
-    console.log(v[1]);
-     if (selector == 1) {
+      if (selector == 1) {
      // path.push(new BABYLON.Vector3(v[1], v[3], -v[2]));
       path.push(
         new BABYLON.Vector3(

@@ -53,3 +53,88 @@ var fourierExpansion = function (n,N, t, hl) {
  
   return [v, rx];
 };
+
+
+
+
+
+function updateBandMesh(n,N,t, hingeLength) {
+          
+    let temp = fourierExpansion(n,N, t, hingeLength);
+    var v = temp[0];
+ 
+
+ 
+
+    // N = 105;
+    var pos = [];
+    var pathMidline = [];
+    var indices = [];
+    var indicesBack = [];
+    var colors = [];
+    var colorsBack = [];
+    
+    var sign_band = (-1)**n;
+    for (var i = 1; i < N + 1; i++) {
+      var v1 = [v[6 * i - 5], v[6 * i - 3], -v[6 * i - 4]];
+      var v2 = [v[6 * i - 2], v[6 * i], -v[6 * i - 1]];
+
+ 
+      // surface 
+
+      pos.push(v1[0], v1[1], v1[2]);
+      pos.push(v2[0], v2[1], v2[2]);
+
+       
+
+      if (i > 0) {
+        indices.push(2 * i - 1, 2 * i, 2 * i - 2);
+        indices.push(2 * i, 2 * i - 1, 2 * i + 1);
+
+        indicesBack.push(2 * i, 2 * i - 1, 2 * i - 2);
+        indicesBack.push(2 * i - 1, 2 * i, 2 * i + 1);
+
+      };
+    };
+
+    //   console.log(pathMidline)
+    // Update the tube mesh with the new path
+    // Remove the existing tube mesh
+
+
+    i = 1;
+    var v2 = [v[6 * i - 5], v[6 * i - 3], -v[6 * i - 4]];
+    var v1 = [v[6 * i - 2], v[6 * i], -v[6 * i - 1]];
+
+ 
+    pos.push(v1[0], v1[1], v1[2]);
+    pos.push(v2[0], v2[1], v2[2]);
+
+   
+
+    var normals = [];
+    BABYLON.VertexData.ComputeNormals(pos, indices, normals);
+
+    var vertexData = new BABYLON.VertexData();
+    vertexData.positions = pos;
+    vertexData.indices = indices;
+    vertexData.normals = normals;
+    vertexData.colors = colors;
+
+    vertexData.applyToMesh(band);
+
+
+
+    var normalsBack = [];
+    BABYLON.VertexData.ComputeNormals(pos, indicesBack, normalsBack);
+    vertexDataBack = new BABYLON.VertexData();
+    vertexDataBack.positions = pos;
+    vertexDataBack.indices = indicesBack;
+    vertexDataBack.normals = normalsBack;
+ 
+    vertexDataBack.applyToMesh(bandBack);
+
+    ///  surface created 
+
+     
+    };
