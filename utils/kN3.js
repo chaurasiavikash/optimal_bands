@@ -40,7 +40,7 @@ var linspace = function (start, end, num) {
 var animationData = function (n,N,j) {
  
   let t = j ;
-  let c =10/N;
+   let c =1;
   
   let hx = [];
   let hy = [];
@@ -56,7 +56,7 @@ var animationData = function (n,N,j) {
   kappa0 = Array(N + 1).fill(0);
  
 const cosGamma =  n/2 - Math.sqrt(n*n-4)/2;
-const sinGamma =  1-Math.sqrt(cosGamma*cosGamma);
+const sinGamma =  Math.sqrt(1-cosGamma*cosGamma);
  
 ////////////////////////////////////////////////////////////////////////////
 
@@ -76,8 +76,8 @@ const sinGamma =  1-Math.sqrt(cosGamma*cosGamma);
   let sinn_p_s = Math.sin(2*(n+1)*xi)
    
 
-  let tempRx = sinGamma/2 * ((n-cosGamma)*sin2s - (1+cosGamma)*sinn_m_s/2/(n-1) + (1-cosGamma)*sinn_p_s/2/(n+1));
-  let tempRy = -sinGamma/2 * ((n-cosGamma)*cos2s + (1+cosGamma)*cosn_m_s/2/(n-1) + (1-cosGamma)*cosn_p_s/2/(n+1));
+  let tempRx = sinGamma/2 * ((n-cosGamma)*sin2s - (1+cosGamma)*sinn_m_s/(2*n-2) + (1-cosGamma)*sinn_p_s/(2*n+2));
+  let tempRy = -sinGamma/2 * ((n-cosGamma)*cos2s + (1+cosGamma)*cosn_m_s/(2*n-2) + (1-cosGamma)*cosn_p_s/(2*n+2));
    
   let norm1 = Math.sqrt(tempRx*tempRx + tempRy*tempRy)
   
@@ -109,9 +109,9 @@ for (let i = 0; i <= N; i++) {
     let tempBy =  sin2s*cosns*cosGamma - cos2s*sinns;  
     hz[i] =  cosns*sinGamma;
 
-    let tempRx = sinGamma/2 * ((n-cosGamma)*sin2s - (1+cosGamma)*sinn_m_s/2/(n-1) + (1-cosGamma)*sinn_p_s/2/(n+1));
-    let tempRy = -sinGamma/2 * ((n-cosGamma)*cos2s + (1+cosGamma)*cosn_m_s/2/(n-1) + (1-cosGamma)*cosn_p_s/2/(n+1));
-    rz[i] = -Math.sin(2*n*xi)*cosGamma*sinGamma/n;
+    let tempRx = sinGamma/2 * ((n-cosGamma)*sin2s - (1+cosGamma)*sinn_m_s/(2*n-2) + (1-cosGamma)*sinn_p_s/(2*n+2));
+    let tempRy = -sinGamma/2 * ((n-cosGamma)*cos2s + (1+cosGamma)*cosn_m_s/(2*n-2) + (1-cosGamma)*cosn_p_s/(2*n+2));
+    rz[i] = -1*cosns*sinns*sinGamma*sinGamma/n;
 
     rx[i] = cosths_0 * tempRx - sinths_0 * tempRy;
     ry[i] = sinths_0 * tempRx + cosths_0 * tempRy;
@@ -206,20 +206,22 @@ var fourierExpansion = function (n,N, t, hl) {
   return [v, rx];
 };
 
-var paths = function (n, hl, selector,ind) {
-   
+var paths = function (n,N, hl, selector,ind) {
+ 
   var path = [];
   var v0  = [];
   var v   = [];
-  for (var t = 0; t <300; t++) {
-     v0 = fourierExpansion(n,N, t, hl)[0];
-    v[1] = v0[6 * ind - 5]; 
+  let M = 400;   // number of time steps 
+  for (var i = 0; i<M+1; i++) {
+     let t = i/M*2*Pi;
+      v0 = fourierExpansion(n,N, t, hl)[0];
+     v[1] = v0[6 * ind - 5]; 
     v[2] = v0[6 * ind - 4]; 
     v[3] = v0[6 * ind - 3]; 
     v[4] = v0[6 * ind - 2]; 
     v[5] = v0[6 * ind - 1]; 
     v[6] = v0[6 * ind  ];  
-    
+    console.log(v[1]);
      if (selector == 1) {
      // path.push(new BABYLON.Vector3(v[1], v[3], -v[2]));
       path.push(

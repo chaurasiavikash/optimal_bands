@@ -94,16 +94,16 @@
       <text class="textElement" > play/pause </text>
     </g>
 
-    <svg id='playSVG' width='200' height='50' viewBox='-60 -60 120 120' style='margin-top:10px'>
+    <svg id='playSVG' width='200' height='200' viewBox='-60 -60 120 120' style='margin-top:10px'>
       <g class='touchElement glow-effect' id='buttPlayPause'>
         <title> click to play the everting motion</title>
-        <circle cx='0' cy='0' r='60' />
-        <polygon id='playPausePoly' points='-25 -40 -25 40 43 0' fill='#fff' />
+        <circle cx='0' cy='0' r='20' />
+        <polygon id='playPausePoly' points='-7 -10 -7 10 13 0' fill='#fff' />
       </g>
       <g class='touchElement  ' id='clockRing'>
         <title> drag to evert the band</title>
-        <circle cx='0' cy='0' r='0' fill='none' stroke='#555' stroke-width='26' />
-        <circle id='clockHand' r='0' fill='#fff' />
+        <circle cx='0' cy='0' r='40' fill='none' stroke='#555' stroke-width='26' />
+        <circle id='clockHand' r='10' fill='#fff' />
       </g>
     </svg>
 
@@ -274,13 +274,13 @@ setTimeout(() => {
  
  
       var n = 3;
-      var N = 60;
+      var N = 3;
       var n_min = 3;
       var n_max = 27;
        
       // Ensure n is defined somewhere in your code. For example:
-      var Nmin = 2; // Just an example, set it to your desired minimum
-      var Nmax = 300;  
+      var Nmin = 1.5; // Just an example, set it to your desired minimum
+      var Nmax = 200;  
       var NStepSize = 1;
 
       // quantitites for alpha slider 
@@ -406,17 +406,7 @@ setTimeout(() => {
         var bandMat = new BABYLON.StandardMaterial('texture1', scene);
 
         bandMat.diffuseColor = new BABYLON.Color3(1, 1, 0);
-
-
-        // var ground = BABYLON.MeshBuilder.CreateGround('ground', { width: 4, height: 4 }, scene);
-        // var groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene);
-        // groundMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2); // Set a dark color for the ground
-
-        // groundMaterial.specularColor = new BABYLON.Color3(1, 1, 1);; // Disable specular highlights
-
-        // ground.position = new BABYLON.Vector3(0, -.7, 0);
-
-        // ground.material = groundMaterial;
+ 
 
 
         // Create a new standard material 'glass' 
@@ -511,10 +501,7 @@ setTimeout(() => {
 
 
 
-
-        function k_to_t(k) {
-          return Math.round(k * N / (2 * Math.PI));
-        };
+ 
         var t;
 
 
@@ -528,8 +515,8 @@ setTimeout(() => {
 
 
 
-        function updateBandMesh(n,N,k, hingeLength) {
-          t = k_to_t(k);
+        function updateBandMesh(n,N,t, hingeLength) {
+          
           let temp = fourierExpansion(n,N, t, hingeLength);
           var v = temp[0];
 
@@ -553,7 +540,8 @@ setTimeout(() => {
           var indicesBack = [];
           var colors = [];
           var colorsBack = [];
-
+          
+          var sign_band = (-1)**n;
           for (var i = 1; i < N + 1; i++) {
             var v1 = [v[6 * i - 5], v[6 * i - 3], -v[6 * i - 4]];
             var v2 = [v[6 * i - 2], v[6 * i], -v[6 * i - 1]];
@@ -760,7 +748,7 @@ setTimeout(() => {
           for (var i = 1; i < n + 1; i++) {
             var ind = 2 * i * ind0 - 2 * ind0 + 1;
 
-            var curve = paths(n, hingeLength, type, ind);
+            var curve = paths(n,N, hingeLength, type, ind);
             tube[i] = BABYLON.Mesh.CreateTube('tube', curve, 0.0025, 8, null, null, scene);
             tube[i].material = color;
             golf[i] = BABYLON.MeshBuilder.CreateIcoSphere(
@@ -829,8 +817,7 @@ setTimeout(() => {
 
         document.body.addEventListener('nChanged', function (e) {
           
-          // number of twists 
-          n = Math.abs(n);
+           
 
           midline.dispose();
           meshDispose(rulings);
@@ -915,23 +902,34 @@ setTimeout(() => {
           dragging = false;
           clockRing.style.opacity = '';
         }
+        // function playIt() {
+        //   play = !play;
+        //   if (!play) {
+        //     ebID('playPausePoly').setAttribute('points', '-25 -40 -25 40 43 0');
+        //   }                                 //-7 -10 -7 10 13 0   old size 
+        //   else {
+        //     ebID('playPausePoly').setAttribute('points', '-31 -40 -31 40 -10 40 -10 -40 14 -40 14 40 35 40 35 -40 -25 -40');
+        //   }
+        // };
+
         function playIt() {
           play = !play;
           if (!play) {
-            ebID('playPausePoly').setAttribute('points', '-25 -40 -25 40 43 0');
-          }                                 //-7 -10 -7 10 13 0   old size 
+            ebID('playPausePoly').setAttribute('points', '-7 -10 -7 10 13 0');
+          }
           else {
-            ebID('playPausePoly').setAttribute('points', '-31 -40 -31 40 -10 40 -10 -40 14 -40 14 40 35 40 35 -40 -25 -40');
+            ebID('playPausePoly').setAttribute('points', '-7 -10 -7 10 -2 10 -2 -10 2 -10 2 10 7 10 7 -10 -7 -10');
           }
         };
+
         ebID('buttPlayPause').addEventListener('click', playIt, false);
         document.addEventListener('keydown', function (e) { if (e.keyCode == '32') playIt(); }); // space key play
 
         // speed control //////////////////////////////////////////////////////////////////
 
-        var speedSlider = new Slider('speedSlider', 4, 100, 20, '', 0, '%');
+        var speedSlider = new Slider('speedSlider', 4, 50, 20, '', 0, '%');
         ebID('speedSlider').addEventListener('sliderChange', function () {
-          speedy = speedSlider.getValue() / 2000 / n ** .2;
+          speedy = speedSlider.getValue() / 4000 / n ** .2 * N**.2;
         });
 
 
