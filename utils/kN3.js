@@ -140,6 +140,7 @@ for (let i = 0; i <= N; i++) {
     rz[i] /= dl;
   }
 
+ 
   return [hx,hy,hz,rx,ry,rz]; 
 };
 
@@ -198,6 +199,41 @@ var fourierExpansion = function (n,N, t, hl) {
       }
     };
   };
+
+  // printing the edge length s
+  i = 1;
+
+  let x1 = rx[i]- hx[i] * l;
+  let y1 = ry[i]- hy[i] * l;
+  let z1 = rz[i]- hz[i] * l;
+  let x2 = rx[i]+ hx[i] * l;
+  let y2 = ry[i]+ hy[i] * l;
+  let z2 = rz[i]+ hz[i] * l; 
+   i = 2;
+
+  let x3 = rx[i]- hx[i] * l;
+  let y3 = ry[i]- hy[i] * l;
+  let z3 = rz[i]- hz[i] * l;
+  let x4 = rx[i]+ hx[i] * l;
+  let y4 = ry[i]+ hy[i] * l;
+  let z4 = rz[i]+ hz[i] * l; 
+
+  let len13 = Math.sqrt((x1-x3)**2 + (y1-y3)**2 + (z1-z3)**2);
+  let len23 = Math.sqrt((x2-x3)**2 + (y2-y3)**2 + (z2-z3)**2);
+  let len14 = Math.sqrt((x1-x4)**2 + (y1-y4)**2 + (z1-z4)**2);
+  let len24 = Math.sqrt((x2-x4)**2 + (y2-y4)**2 + (z2-z4)**2);
+   
+  //console.log(len13,len23,len14,len24);
+  //console.log( len23+len14);
+
+  let rlen12 = Math.sqrt((rx[0]-rx[1])**2 +  (ry[0]-ry[1])**2 + (rz[0]-rz[1])**2 );
+   
+  console.log(rlen12);
+
+
+
+  
+
  
   return [v, rx];
 };
