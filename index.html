@@ -76,13 +76,7 @@
     </svg>
      <br>
      <br>
-     <svg id='NSlider' class='slider glow-effect' width='200' height='124' viewBox='-100 -45 200 70'>
-      <title> slide to alpha value </title>
-      <text x='-50' y='-10' >N</text> <!-- Position the text on top -->
-      <polygon fill='#555' points='-100 0 -100 40 100 40 100 0' /> <!-- Reposition the polygon -->
-      <rect width='38' height='38' x='-19' y='1' /> <!-- Reposition the rectangle -->
-    </svg>
-    
+     
     
 
     <!-- <div class="inputBox">
@@ -153,9 +147,7 @@
   <div class='rightbar'>
     <button class='button' id='buttFullScreen' title='enable full screen'> full screen </button>
     
-    <button class='button' id="buttShowKappa"
-      title='curvature of the midline. the rainbow color corresponds to the arclength. the n red dots are evenly spaced points on the band with n half twists'>
-      midline curvature</button>
+   
     <button class='button' id='buttShowMid' title='path traced by a point on the midline
      of the band  during the everting motion'> eversion path </button>
     <button class='button' id='buttShowUnit' title='show 1/n th of the band with n half twists '> show unit </button>
@@ -273,10 +265,10 @@ setTimeout(() => {
     window.addEventListener('DOMContentLoaded', function () {
  
  
-      var n = 3;
-      var N = 3;
-      var n_min = 3;
-      var n_max = 27;
+      var n = 4;
+      var N = 200;
+      var n_min = 4;
+      var n_max = 30;
        
       // Ensure n is defined somewhere in your code. For example:
       var Nmin = 1.5; // Just an example, set it to your desired minimum
@@ -297,7 +289,7 @@ setTimeout(() => {
        
 
       /// initialize the mesh
-      var n = 3;
+      var n = 4;
        var c = 1;
       var t = 0;
       animationData(n,N,0);
@@ -316,7 +308,7 @@ setTimeout(() => {
       // change number of half twists ////////////////////////////////////////////////////
       ebID('buttNumOf_n_Minus').addEventListener('click', function () {
         if (n > n_min) {
-          n = n - 1;
+          n = n - 2;
           ebID('infoNumOf_n').innerHTML = "n = " + n.toString();
           
 
@@ -325,7 +317,7 @@ setTimeout(() => {
       });
       ebID('buttNumOf_n_Plus').addEventListener('click', function () {
         if (n < n_max) {
-          n = n + 1;
+          n = n + 2;
           // change the position of the energy slider 
           ebID('infoNumOf_n').innerHTML = "n = " + n.toString();
           
@@ -336,18 +328,7 @@ setTimeout(() => {
         }
       });
 
-      NSlider = new Slider2('NSlider', Nmin, Nmax , 50, 'N ', 2, '');
-        N =  Math.round(NSlider.getValue()*NStepSize + Nmin) ;
-        //ebID('NSlider').getElementsByTagName('rect')[0].setAttribute('x',x);
-        ebID('NSlider').getElementsByTagName('text')[0].innerHTML = "N = " +  N.toString()  
-          
-
-      ebID('NSlider').addEventListener('sliderChange', function () {
-        N =    Math.round(NSlider.getValue()*NStepSize + Nmin) ;
-        ebID('NSlider').getElementsByTagName('text')[0].innerHTML = "N= " +  N .toString()   ;
-         document.body.dispatchEvent(nChanged);
-      });
-
+   
       ///////////////////////////////////////////////////
       ///////////////////////////////////////////////////
       //////// event listener for parameters done ////////
@@ -1273,38 +1254,7 @@ setTimeout(() => {
         //var curve = paths(n, hingeLength, type, ind);
 
 
-
-
-        ebID('buttShowKappa').addEventListener('click', function () {
-          showKappa = !showKappa;
-          buttonSwitchColor(ebID('buttShowKappa'), showKappa);
-
-          if (showKappa == false) {
-            contentK.style.height = '0%';
-            destroyChart(chartK);  // Destroy the chartK when showKappa is false
-          } if (showKappa == true) {
-            if (showEnergy == true) {
-              contentK.style.top = '25%';
-            }
-            contentK.style.height = '22%';
-            //  createchartK(kappa);
-
-            document.body.addEventListener('energyChanged', function () {
-              contentK.style.top = '25%';
-            });
-
-
-            if (showEnergy === false) {
-              contentK.style.top = '0%';
-            }
-
-
-
-
-
-            // Create the chartK when showKappa is true
-          }
-        });
+ 
 
         function positionSliderAbovePlot(slider, chart) {
           var canvasRect = chart.canvas.getBoundingClientRect();
