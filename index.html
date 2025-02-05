@@ -265,9 +265,9 @@ setTimeout(() => {
     window.addEventListener('DOMContentLoaded', function () {
  
  
-      var n = 4;
+      var n = 3;
       var N = 200;
-      var n_min = 4;
+      var n_min = 3;
       var n_max = 30;
        
       // Ensure n is defined somewhere in your code. For example:
@@ -289,7 +289,7 @@ setTimeout(() => {
        
 
       /// initialize the mesh
-      var n = 4;
+      var n = 3;
        var c = 1;
       var t = 0;
       animationData(n,N,0);
@@ -308,7 +308,7 @@ setTimeout(() => {
       // change number of half twists ////////////////////////////////////////////////////
       ebID('buttNumOf_n_Minus').addEventListener('click', function () {
         if (n > n_min) {
-          n = n - 2;
+          n = n - 1;
           ebID('infoNumOf_n').innerHTML = "n = " + n.toString();
           
 
@@ -317,7 +317,7 @@ setTimeout(() => {
       });
       ebID('buttNumOf_n_Plus').addEventListener('click', function () {
         if (n < n_max) {
-          n = n + 2;
+          n = n + 1;
           // change the position of the energy slider 
           ebID('infoNumOf_n').innerHTML = "n = " + n.toString();
           
